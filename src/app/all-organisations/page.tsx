@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-function GetOrganisation() {
+function AllOrganisation() {
   const [category, setCategory] = useState("");
-  
-  const [organisations, setOrganisation] = useState([]);
+
+  const [organizations, setOrganisation] = useState([]);
   const [state, setState] = useState(false);
   const router = useRouter();
   useEffect(() => {
@@ -29,49 +29,34 @@ function GetOrganisation() {
         localStorage.removeItem("token");
       });
   }, []);
-  useEffect(() => {
-    axios.get((SERVER_URL + "/admin/get-organizations"),
-      {
-        headers: {
-          "x-access-token": localStorage.getItem("token")
-        }
-      }).then((res) => {
-        setOrganisation(res.data.organizations);
-      });
-  }, [state]);
-
-const handleCategory = (e: any) => {
-    const selectedCategory = e.target.value; // Get the selected district from the event
-
-    setCategory(selectedCategory); // Update the district state with the selected district
-
-    axios
-      .get(
-        `${SERVER_URL}/admin/get-organizations?category=${selectedCategory}`,
+    useEffect(() => {
+      axios.get((SERVER_URL + "/admin/get-organizations"),
         {
-          // Use the updated district value
-          headers: { "x-access-token": localStorage.getItem("token") },
-        }
-      )
-      .catch((err) => {
-        console.log(err.response.data);
-      });
-  };
-  
-const handleSubmit = () => {
+          headers: {
+            "x-access-token": localStorage.getItem("token")
+          }
+        }).then((res) => {
+          setOrganisation(res.data.organizations);
+          
+        });
+    }, [state]);
+
+
+
+  const handleSubmit = () => {
     const token = localStorage.getItem("token");
-  
-    axios.get(`${SERVER_URL}/admin/get-organizations?category=${category}`,  {
+
+    axios.get(`${SERVER_URL}/admin/get-organizations?category=${category}`, {
       headers: {
         'x-access-token': token
       }
     }).then((res) => {
-        setOrganisation(res.data.organizations);
-      }).catch((err) => {
+      setOrganisation(res.data.organizations);
+    }).catch((err) => {
       console.log(err)
     })
   }
-  
+
   const handleDelete = (id: string) => {
     axios
       .post(
@@ -85,44 +70,45 @@ const handleSubmit = () => {
       )
       .then((res) => {
         if (res.status === 200) {
-          toast.success("Organisation deleted successfully");
-          setOrganisation(organisations.filter((item:any) => item._id !== id));
+          toast.success("Oraganisation deleted successfully");
+          setOrganisation(organizations.filter((item: any) => item._id !== id));
         }
       });
   };
-  
+
   return (
     <Sidebar>
       <div>
-        <h1 className="text-3xl font-bold mx-auto">All Organisations</h1>
+        <h1 className="text-3xl font-bold mx-auto">All Organisation</h1>
 
         <div className="max-w-sm mx-auto mt-14 ">
-          
+
           {/* category field */}
           <div className="max-w-sm mx-auto">
-                <label
-                  htmlFor="category"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
-                >
-                  Select Category
-                </label>
-                <select
-                  id="category"
-                  onChange={(e) => handleCategory(e)}
-                  className="bg-gray-50 mb-2 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-900 focus:border-blue-900 block w-full p-3 dark:bg-white dark:border-gray-600 dark:placeholder-black dark:text-black dark:focus:ring-blue-800 dark:focus:border-blue-900"
-                >
-                  <option>Select an option</option>
-                  {organisations.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <label
+            htmlFor="district"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Select Category
+          </label>
+          <select
+            id="category"
+            className="bg-gray-50 mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           
+          >
+            <option>Select an option</option>
+            {organizations.map((category: any) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
-        
-        
+
+
+        </div>
+
+
         <div className="max-w-sm mx-auto my-5">
           <button
             className="bg-primary text-white w-full py-3 rounded-lg bg-blue-500"
@@ -182,12 +168,12 @@ const handleSubmit = () => {
               </tr>
             </thead>
             <tbody>
-              {organisations?.map((item: any) => (
+              {organizations?.map((item: any) => (
                 <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-6 py-4">{item?.name}</td>
                   <td className="px-6 py-4">{item?.link}</td>
                   <td className="px-6 py-4">{item?.postion}</td>
-                  <td className="px-6 py-4" width={"150px"}><img src={item?.image} /></td>
+                  <td className="px-1 py-1" width={"200px"}><img src={item?.image} /></td>
                   <td className="px-6 py-4">{item?.category}</td>
                   <td className="px-6 py-4">{item?.phone}</td>
                   <td className="px-6 py-4">{item?.email}</td>
@@ -216,5 +202,5 @@ const handleSubmit = () => {
   );
 }
 
-export default GetOrganisation;
+export default AllOrganisation;
 
