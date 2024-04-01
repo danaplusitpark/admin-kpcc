@@ -1,4 +1,4 @@
-import SERVER_URL from "@/utils/SERVER_URL";
+import SERVER_URL from "@/configure/SERVER_URL";
 import axios from "axios";
 
 export const Protected = async () => {

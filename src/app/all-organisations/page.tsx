@@ -99,7 +99,7 @@ function AllOrganisation() {
             <option>Select an option</option>
             {organizations.map((category: any) => (
               <option key={category} value={category}>
-                {category}
+                {category.category}
               </option>
             ))}
           </select>
