@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 function AllOrganisation() {
   const [category, setCategory] = useState("");
-
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [organizations, setOrganisation] = useState([]);
   const [state, setState] = useState(false);
   const router = useRouter();
@@ -23,39 +23,59 @@ function AllOrganisation() {
           "x-access-token": token,
         },
       })
-      .then((res) => { })
-      .catch((err) => {
-        router.push("/login");
-        localStorage.removeItem("token");
-      });
-  }, []);
-    useEffect(() => {
-      axios.get((SERVER_URL + "/admin/get-organizations"),
+      .then((res) => {
+        axios.get((SERVER_URL + "/admin/get-organizations"),
         {
           headers: {
             "x-access-token": localStorage.getItem("token")
           }
         }).then((res) => {
           setOrganisation(res.data.organizations);
+          setCategory(res.data.category)
           
         });
-    }, [state]);
+       })
+      .catch((err) => {
+        router.push("/login");
+        localStorage.removeItem("token");
+      });
+  }, [state]);
+    // useEffect(() => {
+    //   axios.get((SERVER_URL + "/admin/get-organizations"),
+    //     {
+    //       headers: {
+    //         "x-access-token": localStorage.getItem("token")
+    //       }
+    //     }).then((res) => {
+    //       setOrganisation(res.data.organizations);
+          
+    //     });
+    // }, [state]);
 
 
 
-  const handleSubmit = () => {
-    const token = localStorage.getItem("token");
-
-    axios.get(`${SERVER_URL}/admin/get-organizations?category=${category}`, {
-      headers: {
-        'x-access-token': token
-      }
-    }).then((res) => {
-      setOrganisation(res.data.organizations);
-    }).catch((err) => {
-      console.log(err)
-    })
-  }
+    const handleSubmit = (e: any) => {
+      e.preventDefault(); // Prevent the default form submission behavior
+  
+      const token = localStorage.getItem('token'); // Get the token from local storage
+  
+      // Make the API request
+      axios
+        .get(`${SERVER_URL}/admin/get-organizations?category=${category}`, {
+          headers: {
+            'x-access-token': token,
+          },
+        })
+        .then((res) => {
+          // Update state with the fetched data
+          setOrganisation(res.data.organizations);
+          setIsFormSubmitted(true); 
+        })
+        .catch((err) => {
+          console.error('Error fetching organizations:', err);
+        });
+    };
+  
 
   const handleDelete = (id: string) => {
     axios
@@ -86,19 +106,20 @@ function AllOrganisation() {
           {/* category field */}
           <div className="max-w-sm mx-auto">
           <label
-            htmlFor="district"
+            htmlFor="category"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Select Category
           </label>
           <select
             id="category"
+            onChange={(e) => setCategory(e.target.value)}
             className="bg-gray-50 mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           
           >
             <option>Select an option</option>
             {organizations.map((category: any) => (
-              <option key={category} value={category}>
+              <option key={category.id} value={category.category}>
                 {category.category}
               </option>
             ))}
@@ -167,6 +188,7 @@ function AllOrganisation() {
                 </th>
               </tr>
             </thead>
+            {isFormSubmitted && (
             <tbody>
               {organizations?.map((item: any) => (
                 <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
@@ -194,6 +216,7 @@ function AllOrganisation() {
                 </tr>
               ))}
             </tbody>
+            )}
           </table>
         </div>
       </div>

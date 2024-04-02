@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 function AllBlog() {
   const [category, setCategory] = useState("");
-  
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [blog, setBlog] = useState([]);
   const [state, setState] = useState(false);
   const router = useRouter();
@@ -23,7 +23,19 @@ function AllBlog() {
           "x-access-token": token,
         },
       })
-      .then((res) => { })
+      .then((res) => {
+          axios.get((SERVER_URL + "/admin/get-blogs"),
+          {
+            headers: {
+              "x-access-token": localStorage.getItem("token")
+            }
+          }).then((res) => {
+            setBlog(res.data.blogs);
+            setCategory(res.data.category)
+            
+          });
+        
+       })
       .catch((err) => {
         router.push("/login");
         localStorage.removeItem("token");
@@ -42,15 +54,16 @@ function AllBlog() {
 
 
   
-const handleSubmit = () => {
+const handleSubmit = (e: any) => {
     const token = localStorage.getItem("token");
-  
+    e.preventDefault();
     axios.get(`${SERVER_URL}/admin/get-blogs?category=${category}`,  {
       headers: {
         'x-access-token': token
       }
     }).then((res) => {
         setBlog(res.data.blogs);
+        setIsFormSubmitted(true);
       }).catch((err) => {
       console.log(err)
     })
@@ -83,22 +96,27 @@ const handleSubmit = () => {
         <div className="max-w-sm mx-auto mt-14 ">
           
           {/* category field */}
+          <div className="max-w-sm mx-auto">
           <label
             htmlFor="category"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Category
+            Select Category
           </label>
-          <input
-            onChange={(e) => setCategory(e.target.value)}
-            type="text"
+          <select
             id="category"
-            value={category}
-            className="bg-gray-50 mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-white dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Category"
-          />
-
+            onChange={(e) => setCategory(e.target.value)}
+            className="bg-gray-50 mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           
+          >
+            <option>Select an option</option>
+            {blog.map((category: any) => (
+              <option key={category.id} value={category.category}>
+                {category.category}
+              </option>
+            ))}
+          </select>
+        </div>
         </div>
         
         
@@ -146,6 +164,7 @@ const handleSubmit = () => {
                 </th>
               </tr>
             </thead>
+            {isFormSubmitted&&(
             <tbody>
               {blog?.map((item: any) => (
                 <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
@@ -169,6 +188,7 @@ const handleSubmit = () => {
                 </tr>
               ))}
             </tbody>
+            )}
           </table>
         </div>
       </div>
