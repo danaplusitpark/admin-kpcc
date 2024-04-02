@@ -331,7 +331,7 @@ function AddBearer() {
           </button>
         </div>
       </div>
-      {/* <div className="table-list-group my-20">
+      <div className="table-list-group my-20">
         <div className="relative overflow-x-auto rounded-xl">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white rounded-xl">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-white">
@@ -409,7 +409,7 @@ function AddBearer() {
             </tbody>
           </table>
         </div>
-      </div> */}
+      </div>
     </Sidebar>
 
   );
